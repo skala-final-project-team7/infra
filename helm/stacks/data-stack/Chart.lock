@@ -1,0 +1,15 @@
+dependencies:
+- name: mysql
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.0.3
+- name: mongodb
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 18.1.9
+- name: rabbitmq
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 16.0.14
+- name: qdrant
+  repository: https://qdrant.github.io/qdrant-helm
+  version: 1.17.1
+digest: sha256:1a0d16d0486cd2ed5aa169e4eabe301fad03cc099ea14fd0b96cef42870968cf
+generated: "2026-05-14T17:28:03.444832+09:00"

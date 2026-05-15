@@ -1,0 +1,18 @@
+mysql:
+  auth:
+    database: skala_app
+    username: skala
+
+mongodb:
+  auth:
+    usernames:
+      - skala
+    databases:
+      - skala_app
+
+rabbitmq:
+  auth:
+    username: skala
+
+qdrant:
+  replicaCount: 1
