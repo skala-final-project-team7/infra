@@ -1,1 +1,5 @@
 /secret/
+*.secret.yaml
+*-secret.yaml
+.env
+*.env

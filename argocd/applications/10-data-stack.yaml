@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: data-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:skala-final-project-team7/infra.git
+    targetRevision: main
+    path: infra/helm/stacks/data-stack
+    helm:
+      releaseName: data-stack
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: skala3-finalproj-class2-team7
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
