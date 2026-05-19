@@ -1,5 +1,31 @@
+# Local Kubernetes secrets
 /secret/
 *.secret.yaml
 *-secret.yaml
+*secret*.yaml
+
+# Local environment files
 .env
+.env.*
 *.env
+
+# Local values files that may contain credentials
+values-local.yaml
+values-*.local.yaml
+values-secret.yaml
+values-*.secret.yaml
+
+# kubeconfig / cluster access files
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+
+# Helm temporary/generated files
+*.tgz
+charts/*.tgz
+
+# OS / editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
