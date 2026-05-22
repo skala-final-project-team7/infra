@@ -1,0 +1,99 @@
+name: Infra CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "helm/**"
+      - "observability/**"
+      - "argocd/**"
+      - "platform/**"
+      - ".github/workflows/infra-ci.yaml"
+      - ".gitignore"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "helm/**"
+      - "observability/**"
+      - "argocd/**"
+      - "platform/**"
+      - ".github/workflows/infra-ci.yaml"
+      - ".gitignore"
+
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  EKS_CLUSTER_NAME: skala-2025
+  K8S_NAMESPACE: skala3-finalproj-class2-team7
+  ARGOCD_NAMESPACE: skala3-finalproj-class2-team7
+
+jobs:
+  validate:
+    name: Validate Helm manifests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show CI context
+        run: |
+          echo "AWS_REGION=${AWS_REGION}"
+          echo "EKS_CLUSTER_NAME=${EKS_CLUSTER_NAME}"
+          echo "K8S_NAMESPACE=${K8S_NAMESPACE}"
+          echo "ARGOCD_NAMESPACE=${ARGOCD_NAMESPACE}"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Add Helm repositories
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add qdrant https://qdrant.github.io/qdrant-helm
+          helm repo update
+
+      - name: Build data-stack dependencies
+        run: |
+          helm dependency build helm/stacks/data-stack
+
+      - name: Lint data-stack chart
+        run: |
+          helm lint helm/stacks/data-stack \
+            -f helm/stacks/data-stack/values.yaml
+
+      - name: Template data-stack chart
+        run: |
+          helm template data-stack helm/stacks/data-stack \
+            -n "${K8S_NAMESPACE}" \
+            -f helm/stacks/data-stack/values.yaml \
+            > /tmp/data-stack-rendered.yaml
+
+      - name: Template Loki chart
+        run: |
+          helm template loki grafana/loki \
+            -n "${K8S_NAMESPACE}" \
+            -f observability/logging/loki-values.yaml \
+            > /tmp/loki-rendered.yaml
+
+      - name: Template Alloy chart
+        run: |
+          helm template alloy grafana/alloy \
+            -n "${K8S_NAMESPACE}" \
+            -f observability/logging/alloy-values.yaml \
+            > /tmp/alloy-rendered.yaml
+
+      - name: Template monitoring chart
+        run: |
+          helm template monitoring prometheus-community/kube-prometheus-stack \
+            -n "${K8S_NAMESPACE}" \
+            -f observability/monitoring/values.yaml \
+            > /tmp/monitoring-rendered.yaml
+
+      - name: Show rendered manifest summary
+        run: |
+          wc -l /tmp/*-rendered.yaml

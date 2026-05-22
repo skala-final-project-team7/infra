@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: skala3-finalproj-class2-team7
+spec:
+  project: default
+  #Grafana Helm repo에서 loki chart 7.0.0을 가져오고 values 파일은 infra repo의 observability/logging/loki-values.yaml을 사용
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: loki
+      targetRevision: 7.0.0
+      helm:
+        releaseName: loki
+        valueFiles:
+          - $values/observability/logging/loki-values.yaml
+
+    - repoURL: https://github.com/skala-final-project-team7/infra.git
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: skala3-finalproj-class2-team7
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
