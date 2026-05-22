@@ -1,5 +1,26 @@
+crds:
+  enabled: false
+
+global:
+  rbac:
+    create: false
+
+kube-state-metrics:
+  enabled: false
+  rbac:
+    create: false
+
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
+  rbac:
+    create: false
+
 grafana:
   enabled: true
+  rbac:
+    create: true
+    namespaced: true
 
   admin:
     existingSecret: grafana-admin-secret
@@ -24,6 +45,8 @@ grafana:
       isDefault: false
 
 prometheus:
+  rbac:
+    create: false
   prometheusSpec:
     retention: 7d
     storageSpec:
