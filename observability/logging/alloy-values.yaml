@@ -1,3 +1,6 @@
+crds:
+  create: false
+
 rbac:
   create: true
   namespaces:
