@@ -1,3 +1,8 @@
+rbac:
+  create: true
+  namespaces:
+    - skala3-finalproj-class2-team7
+
 controller:
   type: daemonset
 
