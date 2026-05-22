@@ -62,6 +62,17 @@ grafana:
     create: true
     namespaced: true
 
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: skala3-finalproj-class2-team7
+      resource: configmap
+
+    datasources:
+      enabled: true
+      searchNamespace: skala3-finalproj-class2-team7
+      resource: configmap
+
   admin:
     existingSecret: grafana-admin-secret
     userKey: admin-user
