@@ -1,5 +1,10 @@
 deploymentMode: SingleBinary
 
+rbac:
+  create: false
+  namespaced: true
+  useExistingRole: loki
+
 loki:
   auth_enabled: false
 
