@@ -5,19 +5,59 @@ global:
   rbac:
     create: false
 
+defaultRules:
+  create: false
+
+# kube-system / control-plane 대상 모니터링 비활성화
+# namespaced Argo CD는 kube-system 리소스를 관리할 수 없으므로 모두 꺼둔다.
+kubeApiServer:
+  enabled: false
+
+kubelet:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+coreDns:
+  enabled: false
+
+kubeDns:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+# kube-state-metrics 비활성화
+# cluster-wide 리소스 조회용 ClusterRole 생성을 피하기 위함.
+kubeStateMetrics:
+  enabled: false
+
 kube-state-metrics:
   enabled: false
   rbac:
     create: false
 
+# Prometheus Operator 설정
 prometheusOperator:
+  enabled: true
+
   admissionWebhooks:
     enabled: false
+
   rbac:
     create: false
 
+# Grafana 설정
 grafana:
   enabled: true
+
   rbac:
     create: true
     namespaced: true
@@ -44,11 +84,21 @@ grafana:
       url: http://loki-gateway.skala3-finalproj-class2-team7.svc.cluster.local
       isDefault: false
 
+# Prometheus 설정
 prometheus:
+  enabled: true
+
   rbac:
     create: false
+
   prometheusSpec:
     retention: 7d
+
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -58,11 +108,17 @@ prometheus:
             requests:
               storage: 10Gi
 
+# Alertmanager는 PoC 단계에서 사용하지 않음
 alertmanager:
   enabled: false
 
+# node-exporter는 공용 클러스터에서 hostPort 충돌 가능성이 있으므로 비활성화
 nodeExporter:
   enabled: false
 
 prometheus-node-exporter:
+  enabled: false
+
+# Thanos도 사용하지 않음
+thanosRuler:
   enabled: false
