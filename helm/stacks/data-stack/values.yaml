@@ -44,6 +44,15 @@ mongodb:
   persistence:
     enabled: true
     size: 5Gi
+  metrics:
+    enabled: true
+    image:
+      registry: registry-1.docker.io
+      repository: bitnamilegacy/mongodb-exporter
+      tag: latest
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
 rabbitmq:
   enabled: true
