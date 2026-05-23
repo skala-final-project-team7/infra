@@ -51,6 +51,9 @@ mongodb:
       repository: bitnamilegacy/mongodb-exporter
       tag: latest
     compatibleMode: false
+    collector:
+      diagnosticdata: false
+      replicasetstatus: true
     serviceMonitor:
       enabled: true
       interval: 30s
