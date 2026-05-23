@@ -50,6 +50,7 @@ mongodb:
       registry: registry-1.docker.io
       repository: bitnamilegacy/mongodb-exporter
       tag: latest
+    compatibleMode: false
     serviceMonitor:
       enabled: true
       interval: 30s
