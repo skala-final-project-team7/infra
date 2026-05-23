@@ -53,6 +53,18 @@ rabbitmq:
 qdrant:
   enabled: true
   replicaCount: 1
+  metrics:
+    serviceMonitor:
+      enabled: true
+      scrapeInterval: 30s
+      scrapeTimeout: 10s
+      targetPort: http
+      targetPath: /metrics
+      authorization:
+        type: Bearer
+        credentials:
+          name: qdrant-secret
+          key: read-only-api-key
   apiKey:
     valueFrom:
     secretKeyRef:
