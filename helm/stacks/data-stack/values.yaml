@@ -49,6 +49,12 @@ rabbitmq:
   persistence:
     enabled: true
     size: 5Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      default:
+        enabled: true
+        interval: 30s
 
 qdrant:
   enabled: true
