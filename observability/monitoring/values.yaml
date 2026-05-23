@@ -34,6 +34,15 @@ kubeScheduler:
 kubeProxy:
   enabled: false
 
+kubeEtcd:
+  enabled: false
+
+nodeExporter:
+  enabled: false
+
+kubeStateMetrics:
+  enabled: false
+
 # kube-state-metrics 비활성화
 # cluster-wide 리소스 조회용 ClusterRole 생성을 피하기 위함.
 kubeStateMetrics:
@@ -53,6 +62,9 @@ prometheusOperator:
 
   rbac:
     create: false
+
+  namespaces:
+    releaseNamespace: true
 
 # Grafana 설정
 grafana:
