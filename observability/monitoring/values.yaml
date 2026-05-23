@@ -69,6 +69,10 @@ prometheusOperator:
   kubeletService:
     enabled: false
 
+  kubeletEndpointsEnabled: false
+  
+  kubeletEndpointSliceEnabled: false
+
 # Grafana 설정
 grafana:
   enabled: true
