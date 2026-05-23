@@ -1,0 +1,99 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: monitoring-prometheus-operator-role
+  namespace: skala3-finalproj-class2-team7
+rules:
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - prometheuses
+      - prometheuses/status
+      - prometheuses/finalizers
+      - prometheusagents
+      - prometheusagents/status
+      - alertmanagers
+      - alertmanagers/status
+      - alertmanagerconfigs
+      - alertmanagerconfigs/status
+      - servicemonitors
+      - podmonitors
+      - probes
+      - prometheusrules
+      - scrapeconfigs
+      - thanosrulers
+      - thanosrulers/status
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - services/finalizers
+      - endpoints
+      - pods
+      - secrets
+      - configmaps
+      - serviceaccounts
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - update
+
+  - apiGroups:
+      - events.k8s.io
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - update
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-prometheus-operator-rolebinding
+  namespace: skala3-finalproj-class2-team7
+subjects:
+  - kind: ServiceAccount
+    name: monitoring-kube-prometheus-operator
+    namespace: skala3-finalproj-class2-team7
+roleRef:
+  kind: Role
+  name: monitoring-prometheus-operator-role
+  apiGroup: rbac.authorization.k8s.io
