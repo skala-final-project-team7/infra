@@ -66,6 +66,9 @@ prometheusOperator:
   namespaces:
     releaseNamespace: true
 
+  kubeletService:
+    enabled: false
+
 # Grafana 설정
 grafana:
   enabled: true
