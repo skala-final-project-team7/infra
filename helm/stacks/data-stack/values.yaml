@@ -16,6 +16,15 @@ mysql:
     persistence:
       enabled: true
       size: 5Gi
+  metrics:
+    enabled: true
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/mysqld-exporter
+      tag: 0.17.2-debian-12-r16
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
 mongodb:
   enabled: true
