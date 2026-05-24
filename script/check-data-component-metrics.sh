@@ -101,6 +101,26 @@ metric_names() {
     | head -n 80 || true
 }
 
+active_metric_names() {
+  local title="$1"
+  local pattern="$2"
+
+  echo
+  echo "## ${title} active metric names in last 10m"
+  local response
+  response="$(curl -fsS --get "${PROM_URL}/api/v1/series" \
+    --data-urlencode "match[]={__name__=~\"${pattern}\"}" \
+    --data-urlencode "start=$(date -u -v-10M +%s 2>/dev/null || date -u -d '10 minutes ago' +%s)" \
+    --data-urlencode "end=$(date -u +%s)")"
+
+  if [[ "$(jq '.data | length' <<<"$response")" == "0" ]]; then
+    echo "NO ACTIVE SERIES IN LAST 10M"
+    return
+  fi
+
+  jq -r '.data[].__name__' <<<"$response" | sort -u
+}
+
 series_labels() {
   local title="$1"
   local metric="$2"
@@ -176,9 +196,14 @@ check_mongodb() {
   query "MongoDB replica member health" 'mongodb_mongod_replset_member_health'
   query "MongoDB replica state" 'mongodb_mongod_replset_my_state'
   query "MongoDB scrape duration" 'scrape_duration_seconds{job="data-stack-mongodb-metrics"}'
+  query "MongoDB uptime" 'mongodb_instance_uptime_seconds or mongodb_mongod_instance_uptime_seconds'
+  query "MongoDB memory" 'mongodb_memory'
+  query "MongoDB network request rate" 'rate(mongodb_network_metrics_num_requests_total[5m])'
+  query "MongoDB WiredTiger cache bytes" 'mongodb_mongod_wiredtiger_cache_bytes'
   series_labels "MongoDB connections" "mongodb_connections"
   series_labels "MongoDB operation counters" "mongodb_op_counters_total"
   series_labels "MongoDB replica state" "mongodb_mongod_replset_my_state"
+  active_metric_names "MongoDB" 'mongodb_.*'
   metric_names "MongoDB" '^mongodb_'
 }
 
