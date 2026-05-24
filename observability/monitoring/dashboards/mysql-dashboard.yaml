@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-mysql-detail
+  namespace: skala3-finalproj-class2-team7
+  labels:
+    grafana_dashboard: "1"
+data:
+  mysql-detail.json: |-
+    {
+      "annotations": {"list": [{"builtIn": 1, "datasource": {"type": "grafana", "uid": "-- Grafana --"}, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard"}]},
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}, "id": 1, "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "up{job=\"data-stack-mysql-metrics\"}", "legendFormat": "MySQL exporter", "refId": "A"}], "title": "MySQL Exporter Status", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}, "id": 2, "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "mysql_up{job=\"data-stack-mysql-metrics\"}", "legendFormat": "MySQL", "refId": "A"}], "title": "MySQL Connection Status", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}, "id": 3, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "mysql_global_status_threads_connected{job=\"data-stack-mysql-metrics\"}", "legendFormat": "connected", "refId": "A"}], "title": "Threads Connected", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}, "id": 4, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "mysql_global_status_threads_running{job=\"data-stack-mysql-metrics\"}", "legendFormat": "running", "refId": "A"}], "title": "Threads Running", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}, "id": 5, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "rate(mysql_global_status_questions{job=\"data-stack-mysql-metrics\"}[5m])", "legendFormat": "questions", "refId": "A"}, {"expr": "sum by (command) (rate(mysql_global_status_commands_total{job=\"data-stack-mysql-metrics\"}[5m]))", "legendFormat": "{{command}}", "refId": "B"}], "title": "Query / Command Rate", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}, "id": 6, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "mysql_global_status_threads_connected{job=\"data-stack-mysql-metrics\"}", "legendFormat": "connected", "refId": "A"}, {"expr": "mysql_global_status_threads_running{job=\"data-stack-mysql-metrics\"}", "legendFormat": "running", "refId": "B"}, {"expr": "mysql_global_status_connections{job=\"data-stack-mysql-metrics\"}", "legendFormat": "connections total", "refId": "C"}], "title": "Connections / Threads", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}, "id": 7, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "rate(mysql_global_status_slow_queries{job=\"data-stack-mysql-metrics\"}[5m])", "legendFormat": "slow queries", "refId": "A"}], "title": "Slow Query Rate", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}, "id": 8, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "1 - (rate(mysql_global_status_innodb_buffer_pool_reads{job=\"data-stack-mysql-metrics\"}[5m]) / rate(mysql_global_status_innodb_buffer_pool_read_requests{job=\"data-stack-mysql-metrics\"}[5m]))", "legendFormat": "buffer pool hit ratio", "refId": "A"}], "title": "InnoDB Buffer Pool Hit Ratio", "type": "timeseries"}
+      ],
+      "refresh": "30s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["skala", "data-stack", "mysql"],
+      "templating": {"list": []},
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "MySQL Detail",
+      "uid": "mysql-detail",
+      "version": 1,
+      "weekStart": ""
+    }

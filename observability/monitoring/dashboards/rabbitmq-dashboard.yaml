@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-rabbitmq-detail
+  namespace: skala3-finalproj-class2-team7
+  labels:
+    grafana_dashboard: "1"
+data:
+  rabbitmq-detail.json: |-
+    {
+      "annotations": {"list": [{"builtIn": 1, "datasource": {"type": "grafana", "uid": "-- Grafana --"}, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard"}]},
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}, "id": 1, "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "up{job=\"data-stack-rabbitmq\"}", "legendFormat": "RabbitMQ", "refId": "A"}], "title": "RabbitMQ Status", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}, "id": 2, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "rabbitmq_queues{job=\"data-stack-rabbitmq\"}", "legendFormat": "queues", "refId": "A"}], "title": "Queues", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}, "id": 3, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "rabbitmq_connections{job=\"data-stack-rabbitmq\"}", "legendFormat": "connections", "refId": "A"}], "title": "Connections", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}, "id": 4, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "rabbitmq_channels{job=\"data-stack-rabbitmq\"}", "legendFormat": "channels", "refId": "A"}], "title": "Channels", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}, "id": 5, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "rabbitmq_queue_messages{job=\"data-stack-rabbitmq\"}", "legendFormat": "messages {{queue}}", "refId": "A"}, {"expr": "rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\"}", "legendFormat": "ready {{queue}}", "refId": "B"}, {"expr": "rabbitmq_queue_messages_unacked{job=\"data-stack-rabbitmq\"}", "legendFormat": "unacked {{queue}}", "refId": "C"}], "title": "Queue Messages", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}, "id": 6, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "erlang_vm_memory_bytes_total{job=\"data-stack-rabbitmq\"}", "legendFormat": "erlang vm", "refId": "A"}, {"expr": "rabbitmq_process_resident_memory_bytes{job=\"data-stack-rabbitmq\"}", "legendFormat": "resident", "refId": "B"}], "title": "Memory", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}, "id": 7, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "erlang_vm_process_count{job=\"data-stack-rabbitmq\"}", "legendFormat": "processes", "refId": "A"}, {"expr": "rabbitmq_connections{job=\"data-stack-rabbitmq\"}", "legendFormat": "connections", "refId": "B"}, {"expr": "rabbitmq_channels{job=\"data-stack-rabbitmq\"}", "legendFormat": "channels", "refId": "C"}], "title": "Processes / Connections / Channels", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}, "id": 8, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "rate(rabbitmq_global_messages_delivered_total{job=\"data-stack-rabbitmq\"}[5m])", "legendFormat": "delivered", "refId": "A"}, {"expr": "rate(rabbitmq_global_messages_published_total{job=\"data-stack-rabbitmq\"}[5m])", "legendFormat": "published", "refId": "B"}, {"expr": "rate(rabbitmq_global_messages_acknowledged_total{job=\"data-stack-rabbitmq\"}[5m])", "legendFormat": "acknowledged", "refId": "C"}], "title": "Message Rate", "type": "timeseries"}
+      ],
+      "refresh": "30s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["skala", "data-stack", "rabbitmq"],
+      "templating": {"list": []},
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "RabbitMQ Detail",
+      "uid": "rabbitmq-detail",
+      "version": 1,
+      "weekStart": ""
+    }
