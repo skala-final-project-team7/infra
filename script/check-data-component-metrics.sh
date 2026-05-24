@@ -107,9 +107,18 @@ series_labels() {
 
   echo
   echo "## ${title} series labels"
-  curl -fsS --get "${PROM_URL}/api/v1/series" \
+  local response
+  response="$(curl -fsS --get "${PROM_URL}/api/v1/series" \
     --data-urlencode "match[]={__name__=\"${metric}\"}" \
-    | jq -r '.data[:10][]'
+    --data-urlencode "start=$(date -u -v-10M +%s 2>/dev/null || date -u -d '10 minutes ago' +%s)" \
+    --data-urlencode "end=$(date -u +%s)")"
+
+  if [[ "$(jq '.data | length' <<<"$response")" == "0" ]]; then
+    echo "NO ACTIVE SERIES IN LAST 10M"
+    return
+  fi
+
+  jq -r '.data[:10][]' <<<"$response"
 }
 
 check_qdrant() {
@@ -160,10 +169,12 @@ check_mongodb() {
   echo "================ MongoDB ================"
   query "MongoDB exporter scrape status" 'up{job="data-stack-mongodb-metrics"}'
   query "MongoDB connection status" 'mongodb_up{job="data-stack-mongodb-metrics"}'
-  query "MongoDB connections" "mongodb_connections{job=\"data-stack-mongodb-metrics\"} or mongodb_connections{namespace=\"${NAMESPACE}\"}"
-  query "MongoDB operation rate" 'sum by (type) (rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum by (type) (rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
-  query "MongoDB replica member health" 'mongodb_mongod_replset_member_health{job="data-stack-mongodb-metrics"}'
-  query "MongoDB replica state" "mongodb_mongod_replset_my_state{job=\"data-stack-mongodb-metrics\"} or mongodb_mongod_replset_my_state{namespace=\"${NAMESPACE}\"}"
+  query "MongoDB current connections" 'mongodb_connections{state="current"} or mongodb_connections{conn_type="current"}'
+  query "MongoDB available connections" 'mongodb_connections{state="available"} or mongodb_connections{conn_type="available"}'
+  query "MongoDB connections" 'mongodb_connections'
+  query "MongoDB operation rate" 'sum by (type) (rate(mongodb_mongod_metrics_operation_total[5m])) or sum by (type) (rate(mongodb_op_counters_total[5m])) or sum by (type) (rate(mongodb_mongod_op_latencies_ops_total[5m]))'
+  query "MongoDB replica member health" 'mongodb_mongod_replset_member_health'
+  query "MongoDB replica state" 'mongodb_mongod_replset_my_state'
   query "MongoDB scrape duration" 'scrape_duration_seconds{job="data-stack-mongodb-metrics"}'
   series_labels "MongoDB connections" "mongodb_connections"
   series_labels "MongoDB operation counters" "mongodb_op_counters_total"
