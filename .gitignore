@@ -32,3 +32,5 @@ charts/*.tgz
 
 # etc
 process.md
+/script/*
+!/script/check-data-component-metrics.sh
