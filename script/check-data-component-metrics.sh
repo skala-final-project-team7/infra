@@ -189,17 +189,11 @@ check_mongodb() {
   echo "================ MongoDB ================"
   query "MongoDB exporter scrape status" 'up{job="data-stack-mongodb-metrics"}'
   query "MongoDB connection status" 'mongodb_up{job="data-stack-mongodb-metrics"}'
-  query "MongoDB current connections" 'mongodb_connections{state="current"} or mongodb_connections{conn_type="current"}'
-  query "MongoDB available connections" 'mongodb_connections{state="available"} or mongodb_connections{conn_type="available"}'
-  query "MongoDB connections" 'mongodb_connections'
-  query "MongoDB operation rate" 'sum by (type) (rate(mongodb_mongod_metrics_operation_total[5m])) or sum by (type) (rate(mongodb_op_counters_total[5m])) or sum by (type) (rate(mongodb_mongod_op_latencies_ops_total[5m]))'
-  query "MongoDB replica member health" 'mongodb_mongod_replset_member_health'
-  query "MongoDB replica state" 'mongodb_mongod_replset_my_state'
+  query "MongoDB active series count" 'count({__name__=~"mongodb_.*", job="data-stack-mongodb-metrics"})'
   query "MongoDB scrape duration" 'scrape_duration_seconds{job="data-stack-mongodb-metrics"}'
-  query "MongoDB uptime" 'mongodb_instance_uptime_seconds or mongodb_mongod_instance_uptime_seconds'
-  query "MongoDB memory" 'mongodb_memory'
-  query "MongoDB network request rate" 'rate(mongodb_network_metrics_num_requests_total[5m])'
-  query "MongoDB WiredTiger cache bytes" 'mongodb_mongod_wiredtiger_cache_bytes'
+  query "MongoDB scrape samples" 'scrape_samples_scraped{job="data-stack-mongodb-metrics"}'
+  query "MongoDB scrape samples post relabeling" 'scrape_samples_post_metric_relabeling{job="data-stack-mongodb-metrics"}'
+  query "MongoDB scrape series added" 'scrape_series_added{job="data-stack-mongodb-metrics"}'
   series_labels "MongoDB connections" "mongodb_connections"
   series_labels "MongoDB operation counters" "mongodb_op_counters_total"
   series_labels "MongoDB replica state" "mongodb_mongod_replset_my_state"
