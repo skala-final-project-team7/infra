@@ -12,17 +12,24 @@ loki:
     replication_factor: 1
 
   storage:
-    type: filesystem
+    type: s3
     bucketNames:
-      chunks: chunks
-      ruler: ruler
-      admin: admin
+      chunks: skala-finalproj-team7
+      ruler: skala-finalproj-team7
+      admin: skala-finalproj-team7
+    s3:
+      endpoint: https://1f1b9ced23c3a8a81a6e5d6ea5f9a3f9.r2.cloudflarestorage.com
+      region: auto
+      accessKeyId: ${R2_ACCESS_KEY_ID}
+      secretAccessKey: ${R2_SECRET_ACCESS_KEY}
+      s3ForcePathStyle: true
+      insecure: false
 
   schemaConfig:
     configs:
       - from: "2024-04-01"
         store: tsdb
-        object_store: filesystem
+        object_store: s3
         schema: v13
         index:
           prefix: loki_index_
@@ -30,13 +37,18 @@ loki:
 
   compactor:
     retention_enabled: true
-    delete_request_store: filesystem
+    delete_request_store: s3
 
   limits_config:
     retention_period: 12h
 
 singleBinary:
   replicas: 1
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: loki-r2-secret
   persistence:
     enabled: true
     size: 10Gi
