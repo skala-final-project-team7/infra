@@ -33,7 +33,7 @@ loki:
     delete_request_store: filesystem
 
   limits_config:
-    retention_period: 168h
+    retention_period: 12h
 
 singleBinary:
   replicas: 1
