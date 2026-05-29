@@ -109,6 +109,7 @@ grafana:
 
   additionalDataSources:
     - name: Loki
+      uid: loki
       type: loki
       access: proxy
       url: http://loki-gateway.skala3-finalproj-class2-team7.svc.cluster.local
