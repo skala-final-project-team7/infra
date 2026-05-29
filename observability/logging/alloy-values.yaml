@@ -21,6 +21,10 @@ alloy:
 
       discovery.kubernetes "pods" {
         role = "pod"
+
+        namespaces {
+          names = ["skala3-finalproj-class2-team7"]
+        }
       }
 
       discovery.relabel "pods" {
