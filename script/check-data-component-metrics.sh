@@ -189,16 +189,18 @@ check_mongodb() {
   echo "================ MongoDB ================"
   query "MongoDB exporter scrape status" 'up{job="data-stack-mongodb-metrics"}'
   query "MongoDB connection status" 'mongodb_up{job="data-stack-mongodb-metrics"}'
-  query "MongoDB current connections" 'mongodb_connections{job="data-stack-mongodb-metrics",conn_type="current"} or mongodb_connections{job="data-stack-mongodb-metrics",state="current"} or mongodb_connections{job="data-stack-mongodb-metrics",type="current"} or mongodb_connections{job="data-stack-mongodb-metrics"}'
-  query "MongoDB operation rate" 'sum(rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum(rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
-  query "MongoDB operation rate by type" 'sum by (type) (rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum by (type) (rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
-  query "MongoDB memory" 'mongodb_memory{job="data-stack-mongodb-metrics",type="resident"} or mongodb_memory{job="data-stack-mongodb-metrics",mem_type="resident"} or mongodb_memory{job="data-stack-mongodb-metrics",state="resident"} or mongodb_memory{job="data-stack-mongodb-metrics"}'
-  query "MongoDB network request rate" 'rate(mongodb_network_metrics_num_requests_total{job="data-stack-mongodb-metrics"}[5m])'
-  query "MongoDB global lock queue" 'mongodb_mongod_global_lock_current_queue{job="data-stack-mongodb-metrics"}'
-  query "MongoDB WiredTiger cache" 'mongodb_mongod_wiredtiger_cache_bytes{job="data-stack-mongodb-metrics"}'
-  series_labels "MongoDB connections" "mongodb_connections"
-  series_labels "MongoDB operation counters" "mongodb_op_counters_total"
-  series_labels "MongoDB replica state" "mongodb_mongod_replset_my_state"
+  query "MongoDB current connections" 'mongodb_ss_connections{job="data-stack-mongodb-metrics",conn_type="current"}'
+  query "MongoDB operation rate" 'sum(rate(mongodb_ss_opcounters{job="data-stack-mongodb-metrics"}[5m]))'
+  query "MongoDB operation rate by type" 'sum by (legacy_op_type) (rate(mongodb_ss_opcounters{job="data-stack-mongodb-metrics"}[5m]))'
+  query "MongoDB document rate by type" 'sum by (doc_op_type) (rate(mongodb_ss_metrics_document{job="data-stack-mongodb-metrics"}[5m]))'
+  query "MongoDB resident memory" 'mongodb_ss_mem_resident{job="data-stack-mongodb-metrics"} * 1024 * 1024'
+  query "MongoDB network throughput" 'rate(mongodb_ss_network_bytesIn{job="data-stack-mongodb-metrics"}[5m]) or rate(mongodb_ss_network_bytesOut{job="data-stack-mongodb-metrics"}[5m])'
+  query "MongoDB network request rate" 'rate(mongodb_ss_network_numRequests{job="data-stack-mongodb-metrics"}[5m])'
+  query "MongoDB global lock queue" 'mongodb_ss_globalLock_currentQueue{job="data-stack-mongodb-metrics"}'
+  query "MongoDB WiredTiger cache bytes" 'mongodb_ss_wt_cache_bytes_currently_in_the_cache{job="data-stack-mongodb-metrics"}'
+  series_labels "MongoDB connections" "mongodb_ss_connections"
+  series_labels "MongoDB operation counters" "mongodb_ss_opcounters"
+  series_labels "MongoDB lock queue" "mongodb_ss_globalLock_currentQueue"
   active_metric_names "MongoDB" 'mongodb_.*'
   metric_names "MongoDB" '^mongodb_'
 }
