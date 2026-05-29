@@ -139,9 +139,35 @@ prometheus:
             requests:
               storage: 10Gi
 
-# Alertmanager는 PoC 단계에서 사용하지 않음
 alertmanager:
-  enabled: false
+  enabled: true
+
+  alertmanagerSpec:
+    secrets:
+      - slack-webhook-secret
+
+  config:
+    global:
+      resolve_timeout: 5m
+
+    route:
+      receiver: slack-data-stack
+      group_by:
+        - alertname
+        - component
+        - severity
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 1h
+
+    receivers:
+      - name: slack-data-stack
+        slack_configs:
+          - api_url_file: /etc/alertmanager/secrets/slack-webhook-secret/webhook-url
+            channel: "#alerts"
+            send_resolved: true
+            title: "[{{ .Status }}] {{ .CommonLabels.alertname }}"
+            text: "{{ range .Alerts }}*Severity:* {{ .Labels.severity }}\n*Component:* {{ .Labels.component }}\n*Summary:* {{ .Annotations.summary }}\n*Description:* {{ .Annotations.description }}\n{{ end }}"
 
 # node-exporter는 공용 클러스터에서 hostPort 충돌 가능성이 있으므로 비활성화
 nodeExporter:

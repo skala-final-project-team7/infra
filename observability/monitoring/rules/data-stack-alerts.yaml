@@ -1,0 +1,68 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: data-stack-alerts
+  namespace: skala3-finalproj-class2-team7
+spec:
+  groups:
+    - name: data-stack.rules
+      rules:
+        - alert: DataStackMetricsTargetDown
+          expr: up{job=~"data-stack-(mysql-metrics|mongodb-metrics|rabbitmq|qdrant-headless)"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            component: data-stack
+          annotations:
+            summary: "Data-stack metrics target is down"
+            description: "{{ $labels.job }} on {{ $labels.instance }} has not been scraped successfully for 2 minutes."
+
+        - alert: MySQLUnavailable
+          expr: mysql_up{job="data-stack-mysql-metrics"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            component: mysql
+          annotations:
+            summary: "MySQL exporter cannot reach MySQL"
+            description: "MySQL exporter target {{ $labels.instance }} reports mysql_up=0."
+
+        - alert: MongoDBUnavailable
+          expr: mongodb_up{job="data-stack-mongodb-metrics"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            component: mongodb
+          annotations:
+            summary: "MongoDB exporter cannot reach MongoDB"
+            description: "MongoDB exporter target {{ $labels.instance }} reports mongodb_up=0."
+
+        - alert: RabbitMQQueueBacklogHigh
+          expr: sum(rabbitmq_queue_messages{job="data-stack-rabbitmq"}) > 1000
+          for: 10m
+          labels:
+            severity: warning
+            component: rabbitmq
+          annotations:
+            summary: "RabbitMQ queue backlog is high"
+            description: "RabbitMQ has more than 1000 queued messages for 10 minutes."
+
+        - alert: MySQLSlowQueriesIncreasing
+          expr: rate(mysql_global_status_slow_queries{job="data-stack-mysql-metrics"}[5m]) > 0.05
+          for: 10m
+          labels:
+            severity: warning
+            component: mysql
+          annotations:
+            summary: "MySQL slow queries are increasing"
+            description: "MySQL slow query rate is above 0.05 queries/sec for 10 minutes."
+
+        - alert: MongoDBGlobalLockQueueHigh
+          expr: max(mongodb_ss_globalLock_currentQueue{job="data-stack-mongodb-metrics"}) > 5
+          for: 10m
+          labels:
+            severity: warning
+            component: mongodb
+          annotations:
+            summary: "MongoDB global lock queue is high"
+            description: "MongoDB global lock queue has stayed above 5 for 10 minutes."
