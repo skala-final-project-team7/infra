@@ -189,11 +189,13 @@ check_mongodb() {
   echo "================ MongoDB ================"
   query "MongoDB exporter scrape status" 'up{job="data-stack-mongodb-metrics"}'
   query "MongoDB connection status" 'mongodb_up{job="data-stack-mongodb-metrics"}'
-  query "MongoDB active series count" 'count({__name__=~"mongodb_.*", job="data-stack-mongodb-metrics"})'
-  query "MongoDB scrape duration" 'scrape_duration_seconds{job="data-stack-mongodb-metrics"}'
-  query "MongoDB scrape samples" 'scrape_samples_scraped{job="data-stack-mongodb-metrics"}'
-  query "MongoDB scrape samples post relabeling" 'scrape_samples_post_metric_relabeling{job="data-stack-mongodb-metrics"}'
-  query "MongoDB scrape series added" 'scrape_series_added{job="data-stack-mongodb-metrics"}'
+  query "MongoDB current connections" 'mongodb_mongod_connections{job="data-stack-mongodb-metrics",state="current"} or mongodb_connections{job="data-stack-mongodb-metrics",state="current"} or mongodb_connections{job="data-stack-mongodb-metrics"}'
+  query "MongoDB operation rate" 'sum(rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum(rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
+  query "MongoDB operation rate by type" 'sum by (type) (rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum by (type) (rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
+  query "MongoDB resident memory" 'mongodb_mongod_mem_resident_megabytes{job="data-stack-mongodb-metrics"} * 1024 * 1024 or mongodb_ss_mem_resident{job="data-stack-mongodb-metrics"} * 1024 * 1024'
+  query "MongoDB network throughput" 'sum by (state) (rate(mongodb_mongod_network_bytes_total{job="data-stack-mongodb-metrics"}[5m])) or sum by (state) (rate(mongodb_network_bytes_total{job="data-stack-mongodb-metrics"}[5m]))'
+  query "MongoDB global lock queue" 'mongodb_mongod_global_lock_current_queue{job="data-stack-mongodb-metrics"} or mongodb_global_lock_current_queue{job="data-stack-mongodb-metrics"}'
+  query "MongoDB replica state" 'mongodb_mongod_replset_my_state{job="data-stack-mongodb-metrics"}'
   series_labels "MongoDB connections" "mongodb_connections"
   series_labels "MongoDB operation counters" "mongodb_op_counters_total"
   series_labels "MongoDB replica state" "mongodb_mongod_replset_my_state"
