@@ -217,6 +217,14 @@ data:
         return response.read()
 
     collections = json.loads(request("/collections"))["result"]["collections"]
+    manifest = {
+      "backup_date": backup_date,
+      "collection_count": len(collections),
+      "collections": [collection["name"] for collection in collections]
+    }
+    with open(f"/backup/qdrant-manifest-{backup_date}.json", "w") as output:
+      json.dump(manifest, output)
+
     for collection in collections:
       name = collection["name"]
       snapshot = json.loads(request(f"/collections/{name}/snapshots", method="POST"))["result"]["name"]
