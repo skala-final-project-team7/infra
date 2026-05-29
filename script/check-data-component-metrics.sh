@@ -189,13 +189,13 @@ check_mongodb() {
   echo "================ MongoDB ================"
   query "MongoDB exporter scrape status" 'up{job="data-stack-mongodb-metrics"}'
   query "MongoDB connection status" 'mongodb_up{job="data-stack-mongodb-metrics"}'
-  query "MongoDB current connections" 'mongodb_mongod_connections{job="data-stack-mongodb-metrics",state="current"} or mongodb_connections{job="data-stack-mongodb-metrics",state="current"} or mongodb_connections{job="data-stack-mongodb-metrics"}'
+  query "MongoDB current connections" 'mongodb_connections{job="data-stack-mongodb-metrics",conn_type="current"} or mongodb_connections{job="data-stack-mongodb-metrics",state="current"} or mongodb_connections{job="data-stack-mongodb-metrics",type="current"} or mongodb_connections{job="data-stack-mongodb-metrics"}'
   query "MongoDB operation rate" 'sum(rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum(rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
   query "MongoDB operation rate by type" 'sum by (type) (rate(mongodb_mongod_metrics_operation_total{job="data-stack-mongodb-metrics"}[5m])) or sum by (type) (rate(mongodb_op_counters_total{job="data-stack-mongodb-metrics"}[5m]))'
-  query "MongoDB resident memory" 'mongodb_mongod_mem_resident_megabytes{job="data-stack-mongodb-metrics"} * 1024 * 1024 or mongodb_ss_mem_resident{job="data-stack-mongodb-metrics"} * 1024 * 1024'
-  query "MongoDB network throughput" 'sum by (state) (rate(mongodb_mongod_network_bytes_total{job="data-stack-mongodb-metrics"}[5m])) or sum by (state) (rate(mongodb_network_bytes_total{job="data-stack-mongodb-metrics"}[5m]))'
-  query "MongoDB global lock queue" 'mongodb_mongod_global_lock_current_queue{job="data-stack-mongodb-metrics"} or mongodb_global_lock_current_queue{job="data-stack-mongodb-metrics"}'
-  query "MongoDB replica state" 'mongodb_mongod_replset_my_state{job="data-stack-mongodb-metrics"}'
+  query "MongoDB memory" 'mongodb_memory{job="data-stack-mongodb-metrics",type="resident"} or mongodb_memory{job="data-stack-mongodb-metrics",mem_type="resident"} or mongodb_memory{job="data-stack-mongodb-metrics",state="resident"} or mongodb_memory{job="data-stack-mongodb-metrics"}'
+  query "MongoDB network request rate" 'rate(mongodb_network_metrics_num_requests_total{job="data-stack-mongodb-metrics"}[5m])'
+  query "MongoDB global lock queue" 'mongodb_mongod_global_lock_current_queue{job="data-stack-mongodb-metrics"}'
+  query "MongoDB WiredTiger cache" 'mongodb_mongod_wiredtiger_cache_bytes{job="data-stack-mongodb-metrics"}'
   series_labels "MongoDB connections" "mongodb_connections"
   series_labels "MongoDB operation counters" "mongodb_op_counters_total"
   series_labels "MongoDB replica state" "mongodb_mongod_replset_my_state"

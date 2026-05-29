@@ -52,7 +52,7 @@ mongodb:
       tag: latest
     compatibleMode: false
     collector:
-      diagnosticdata: false
+      diagnosticdata: true
       replicasetstatus: true
     serviceMonitor:
       enabled: true
