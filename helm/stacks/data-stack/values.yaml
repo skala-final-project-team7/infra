@@ -114,7 +114,7 @@ backups:
   ttlSecondsAfterFinished: 86400
 
   r2:
-    existingSecret: data-stack-r2-secret
+    existingSecret: loki-r2-secret
     endpoint: https://1f1b9ced23c3a8a81a6e5d6ea5f9a3f9.r2.cloudflarestorage.com
     bucket: skala-finalproj-team7
     prefix: data-stack
