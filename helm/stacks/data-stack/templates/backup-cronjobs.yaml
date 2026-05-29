@@ -1,0 +1,232 @@
+{{- if .Values.backups.enabled }}
+{{- if and .Values.mysql.enabled .Values.backups.mysql.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "data-stack.fullname" . }}-mysql-backup
+  labels:
+    {{- include "data-stack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql-backup
+spec:
+  schedule: {{ .Values.backups.mysql.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.backups.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backups.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: {{ .Values.backups.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+            - name: dump-mysql
+              image: "{{ .Values.backups.mysql.image.registry }}/{{ .Values.backups.mysql.image.repository }}:{{ .Values.backups.mysql.image.tag }}"
+              imagePullPolicy: {{ .Values.backups.mysql.image.pullPolicy }}
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  BACKUP_DATE="$(date -u +%Y%m%dT%H%M%SZ)"
+                  mysqldump \
+                    --host="${MYSQL_HOST}" \
+                    --port="${MYSQL_PORT}" \
+                    --user="${MYSQL_USER}" \
+                    --single-transaction \
+                    --routines \
+                    --triggers \
+                    --events \
+                    "${MYSQL_DATABASE}" | gzip > "/backup/mysql-${MYSQL_DATABASE}-${BACKUP_DATE}.sql.gz"
+              env:
+                - name: MYSQL_HOST
+                  value: {{ .Values.backups.mysql.host | quote }}
+                - name: MYSQL_PORT
+                  value: {{ .Values.backups.mysql.port | quote }}
+                - name: MYSQL_DATABASE
+                  value: {{ .Values.backups.mysql.database | quote }}
+                - name: MYSQL_USER
+                  value: {{ .Values.backups.mysql.username | quote }}
+                - name: MYSQL_PWD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backups.mysql.existingSecret | quote }}
+                      key: {{ .Values.backups.mysql.passwordKey | quote }}
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          containers:
+            {{- include "data-stack.uploadContainer" . | nindent 12 }}
+              env:
+                {{- include "data-stack.awsEnv" . | nindent 16 }}
+                - name: COMPONENT
+                  value: mysql
+          volumes:
+            - name: backup
+              emptyDir: {}
+{{- end }}
+{{- if and .Values.mongodb.enabled .Values.backups.mongodb.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "data-stack.fullname" . }}-mongodb-backup
+  labels:
+    {{- include "data-stack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb-backup
+spec:
+  schedule: {{ .Values.backups.mongodb.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.backups.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backups.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: {{ .Values.backups.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+            - name: dump-mongodb
+              image: "{{ .Values.backups.mongodb.image.registry }}/{{ .Values.backups.mongodb.image.repository }}:{{ .Values.backups.mongodb.image.tag }}"
+              imagePullPolicy: {{ .Values.backups.mongodb.image.pullPolicy }}
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  BACKUP_DATE="$(date -u +%Y%m%dT%H%M%SZ)"
+                  mongodump \
+                    --host="${MONGODB_HOST}" \
+                    --port="${MONGODB_PORT}" \
+                    --username="${MONGODB_USER}" \
+                    --password="$(cut -d, -f1 /secrets/mongodb-password)" \
+                    --authenticationDatabase="${MONGODB_DATABASE}" \
+                    --db="${MONGODB_DATABASE}" \
+                    --archive="/backup/mongodb-${MONGODB_DATABASE}-${BACKUP_DATE}.archive.gz" \
+                    --gzip
+              env:
+                - name: MONGODB_HOST
+                  value: {{ .Values.backups.mongodb.host | quote }}
+                - name: MONGODB_PORT
+                  value: {{ .Values.backups.mongodb.port | quote }}
+                - name: MONGODB_DATABASE
+                  value: {{ .Values.backups.mongodb.database | quote }}
+                - name: MONGODB_USER
+                  value: {{ .Values.backups.mongodb.username | quote }}
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: mongodb-secret
+                  mountPath: /secrets
+                  readOnly: true
+          containers:
+            {{- include "data-stack.uploadContainer" . | nindent 12 }}
+              env:
+                {{- include "data-stack.awsEnv" . | nindent 16 }}
+                - name: COMPONENT
+                  value: mongodb
+          volumes:
+            - name: backup
+              emptyDir: {}
+            - name: mongodb-secret
+              secret:
+                secretName: {{ .Values.backups.mongodb.existingSecret | quote }}
+                items:
+                  - key: {{ .Values.backups.mongodb.passwordKey | quote }}
+                    path: mongodb-password
+{{- end }}
+{{- if and .Values.qdrant.enabled .Values.backups.qdrant.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "data-stack.fullname" . }}-qdrant-backup
+  labels:
+    {{- include "data-stack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qdrant-backup
+spec:
+  schedule: {{ .Values.backups.qdrant.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.backups.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backups.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: {{ .Values.backups.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+            - name: snapshot-qdrant
+              image: "{{ .Values.backups.qdrant.image.repository }}:{{ .Values.backups.qdrant.image.tag }}"
+              imagePullPolicy: {{ .Values.backups.qdrant.image.pullPolicy }}
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  python /scripts/snapshot-qdrant.py
+              env:
+                - name: QDRANT_URL
+                  value: "http://{{ .Values.backups.qdrant.host }}:{{ .Values.backups.qdrant.port }}"
+                - name: QDRANT_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backups.qdrant.existingSecret | quote }}
+                      key: {{ .Values.backups.qdrant.apiKeyKey | quote }}
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: scripts
+                  mountPath: /scripts
+          containers:
+            {{- include "data-stack.uploadContainer" . | nindent 12 }}
+              env:
+                {{- include "data-stack.awsEnv" . | nindent 16 }}
+                - name: COMPONENT
+                  value: qdrant
+          volumes:
+            - name: backup
+              emptyDir: {}
+            - name: scripts
+              configMap:
+                name: {{ include "data-stack.fullname" . }}-backup-scripts
+{{- end }}
+{{- if and .Values.qdrant.enabled .Values.backups.qdrant.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "data-stack.fullname" . }}-backup-scripts
+  labels:
+    {{- include "data-stack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backup-scripts
+data:
+  snapshot-qdrant.py: |
+    import json
+    import os
+    import time
+    import urllib.error
+    import urllib.request
+
+    base_url = os.environ["QDRANT_URL"].rstrip("/")
+    api_key = os.environ["QDRANT_API_KEY"]
+    backup_date = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+
+    def request(path, method="GET"):
+      req = urllib.request.Request(f"{base_url}{path}", method=method)
+      req.add_header("api-key", api_key)
+      with urllib.request.urlopen(req, timeout=300) as response:
+        return response.read()
+
+    collections = json.loads(request("/collections"))["result"]["collections"]
+    for collection in collections:
+      name = collection["name"]
+      snapshot = json.loads(request(f"/collections/{name}/snapshots", method="POST"))["result"]["name"]
+      try:
+        payload = request(f"/collections/{name}/snapshots/{snapshot}")
+        with open(f"/backup/qdrant-{name}-{backup_date}.snapshot", "wb") as output:
+          output.write(payload)
+      finally:
+        try:
+          request(f"/collections/{name}/snapshots/{snapshot}", method="DELETE")
+        except urllib.error.URLError:
+          pass
+{{- end }}
+{{- end }}

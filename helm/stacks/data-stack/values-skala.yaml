@@ -16,3 +16,11 @@ rabbitmq:
 
 qdrant:
   replicaCount: 1
+
+backups:
+  mysql:
+    database: skala_app
+    username: skala
+  mongodb:
+    database: skala_app
+    username: skala

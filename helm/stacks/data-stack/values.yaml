@@ -106,3 +106,66 @@ qdrant:
   persistence:
     enabled: true
     size: 10Gi
+
+backups:
+  enabled: true
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  ttlSecondsAfterFinished: 86400
+
+  r2:
+    existingSecret: data-stack-r2-secret
+    endpoint: https://1f1b9ced23c3a8a81a6e5d6ea5f9a3f9.r2.cloudflarestorage.com
+    bucket: skala-finalproj-team7
+    prefix: data-stack
+    region: auto
+    accessKeyIdKey: R2_ACCESS_KEY_ID
+    secretAccessKeyKey: R2_SECRET_ACCESS_KEY
+
+  uploader:
+    image:
+      repository: amazon/aws-cli
+      tag: "2.15.57"
+      pullPolicy: IfNotPresent
+
+  mysql:
+    enabled: true
+    schedule: "0 18 * * *"
+    host: data-stack-mysql
+    port: 3306
+    database: skala_team7
+    username: skala
+    existingSecret: mysql-secret
+    passwordKey: mysql-password
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/mysql
+      tag: 9.4.0-debian-12-r1
+      pullPolicy: IfNotPresent
+
+  mongodb:
+    enabled: true
+    schedule: "10 18 * * *"
+    host: data-stack-mongodb
+    port: 27017
+    database: skala_team7
+    username: skala
+    existingSecret: mongodb-secret
+    passwordKey: mongodb-passwords
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/mongodb
+      tag: 8.0.13-debian-12-r0
+      pullPolicy: IfNotPresent
+
+  qdrant:
+    enabled: true
+    schedule: "30 18 * * *"
+    host: data-stack-qdrant
+    port: 6333
+    existingSecret: qdrant-secret
+    apiKeyKey: api-key
+    image:
+      repository: python
+      tag: 3.12-alpine
+      pullPolicy: IfNotPresent
