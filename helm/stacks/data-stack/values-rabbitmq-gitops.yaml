@@ -1,0 +1,71 @@
+rabbitmq:
+  # 1) 인프라에서 exchange/queue/DLX/DLQ/binding 선언
+  extraSecrets:
+    bff-ingest-rmq-definitions:
+      load_definition.json: |
+        {
+          "vhosts": [
+            { "name": "/" }
+          ],
+          "exchanges": [
+            {
+              "name": "lina.admin.ingest",
+              "vhost": "/",
+              "type": "direct",
+              "durable": true,
+              "auto_delete": false
+            }
+          ],
+          "queues": [
+            {
+              "name": "lina.data-ingestion.ingest",
+              "vhost": "/",
+              "durable": true,
+              "auto_delete": false,
+              "arguments": {
+                "x-dead-letter-exchange": "",
+                "x-dead-letter-routing-key": "lina.admin.ingest.dlq"
+              }
+            },
+            {
+              "name": "lina.admin.ingest.completion",
+              "vhost": "/",
+              "durable": true,
+              "auto_delete": false,
+              "arguments": {
+                "x-dead-letter-exchange": "",
+                "x-dead-letter-routing-key": "lina.admin.ingest.completion.dlq"
+              }
+            },
+            {
+              "name": "lina.admin.ingest.dlq",
+              "vhost": "/",
+              "durable": true,
+              "auto_delete": false
+            },
+            {
+              "name": "lina.admin.ingest.completion.dlq",
+              "vhost": "/",
+              "durable": true,
+              "auto_delete": false
+            }
+          ],
+          "bindings": [
+            {
+              "source": "lina.admin.ingest",
+              "vhost": "/",
+              "destination": "lina.data-ingestion.ingest",
+              "destination_type": "queue",
+              "routing_key": "admin.ingest.requested"
+            }
+          ]
+        }
+
+  # 2) definitions 파일을 컨테이너에 읽어 적용
+  loadDefinition:
+    enabled: true
+    existingSecret: bff-ingest-rmq-definitions
+
+  # 3) load_definition.json 경로 지정
+  extraConfiguration: |
+    load_definitions = /app/load_definition.json
