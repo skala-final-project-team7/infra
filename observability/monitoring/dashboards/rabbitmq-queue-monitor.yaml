@@ -34,7 +34,7 @@ data:
           "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
           "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0},
           "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal"},
-          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"})"}]
+          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"}) or on() vector(0)"}]
         },
         {
           "type": "stat",
@@ -43,7 +43,7 @@ data:
           "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
           "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0},
           "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal"},
-          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"})"}]
+          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"}) or on() vector(0)"}]
         },
         {
           "type": "stat",
@@ -52,7 +52,7 @@ data:
           "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
           "gridPos": {"h": 4, "w": 8, "x": 16, "y": 0},
           "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal"},
-          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_unacked{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"})"}]
+          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_unacked{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"}) or on() vector(0)"}]
         },
         {
           "type": "timeseries",
@@ -85,6 +85,14 @@ data:
           "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
           "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
           "targets": [{"refId": "A", "legendFormat": "{{queue}}", "expr": "rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "DLQ Ready Increase (5m)",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 20},
+          "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
+          "targets": [{"refId": "A", "legendFormat": "{{queue}}", "expr": "increase(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"}[5m])"}]
         }
       ]
     }
