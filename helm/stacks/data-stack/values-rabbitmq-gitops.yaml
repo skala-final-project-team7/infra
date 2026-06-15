@@ -1,9 +1,11 @@
 rabbitmq:
-  serviceMonitor:
-    default:
-      enabled: true
-    perObject:
-      enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      default:
+        enabled: true
+      perObject:
+        enabled: true
   # 1) 인프라에서 exchange/queue/DLX/DLQ/binding 선언
   extraSecrets:
     bff-ingest-rmq-definitions:
