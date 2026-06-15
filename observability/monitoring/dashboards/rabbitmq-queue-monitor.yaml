@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-rabbitmq-queue-monitor
+  namespace: skala3-finalproj-class2-team7
+  labels:
+    grafana_dashboard: "1"
+data:
+  rabbitmq-queue-monitor.json: |-
+    {
+      "annotations": {"list": [{"builtIn": 1, "datasource": {"type": "grafana", "uid": "-- Grafana --"}, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard"}]},
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["skala", "data-stack", "rabbitmq"],
+      "templating": {"list": []},
+      "time": {"from": "now-30m", "to": "now"},
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "RabbitMQ Queue Monitor (Main + DLQ)",
+      "uid": "rabbitmq-queue-monitor",
+      "version": 1,
+      "weekStart": "",
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Main Queues Ready",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+          "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0},
+          "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal"},
+          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"})"}]
+        },
+        {
+          "type": "stat",
+          "title": "DLQ Ready",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+          "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0},
+          "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal"},
+          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"})"}]
+        },
+        {
+          "type": "stat",
+          "title": "Main Queues Unacked",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+          "gridPos": {"h": 4, "w": 8, "x": 16, "y": 0},
+          "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal"},
+          "targets": [{"refId": "A", "expr": "sum(rabbitmq_queue_messages_unacked{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"})"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "Main Queues Ready by Queue",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+          "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
+          "targets": [{"refId": "A", "legendFormat": "{{queue}}", "expr": "rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "DLQ Ready by Queue",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+          "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
+          "targets": [{"refId": "A", "legendFormat": "{{queue}}", "expr": "rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "Main Queue Consumer Count",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+          "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
+          "targets": [{"refId": "A", "legendFormat": "{{queue}}", "expr": "rabbitmq_queue_consumers{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion\"}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "DLQ Messages by Queue",
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+          "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
+          "targets": [{"refId": "A", "legendFormat": "{{queue}}", "expr": "rabbitmq_queue_messages_ready{job=\"data-stack-rabbitmq\",namespace=\"skala3-finalproj-class2-team7\",vhost=\"/\",queue=~\"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq\"}"}]
+        }
+      ]
+    }

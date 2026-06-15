@@ -34,3 +34,6 @@ charts/*.tgz
 process.md
 /script/*
 !/script/check-data-component-metrics.sh
+!/script/rabbitmq-baseline-save.sh
+!/script/rabbitmq-baseline-compare.sh
+!/script/rabbitmq-grafana-dashboard-setup.sh

@@ -47,6 +47,50 @@ spec:
             summary: "RabbitMQ queue backlog is high"
             description: "RabbitMQ has more than 1000 queued messages for 10 minutes."
 
+        - alert: RabbitMQMainQueueHasBacklog
+          expr: sum by (queue) (rabbitmq_queue_messages_ready{job="data-stack-rabbitmq",namespace="skala3-finalproj-class2-team7",vhost="/",queue=~"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion"}) > 1000
+          for: 10m
+          labels:
+            severity: warning
+            component: rabbitmq
+            queue_type: main
+          annotations:
+            summary: "RabbitMQ main queue backlog is high"
+            description: "Queue {{ $labels.queue }} has more than 1000 ready messages for 10m."
+
+        - alert: RabbitMQMainQueueConsumerStall
+          expr: (sum by (queue) (rabbitmq_queue_messages_ready{job="data-stack-rabbitmq",namespace="skala3-finalproj-class2-team7",vhost="/",queue=~"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion"}) > 0) and on(queue) (rabbitmq_queue_consumers{job="data-stack-rabbitmq",namespace="skala3-finalproj-class2-team7",vhost="/",queue=~"lina\\.data-ingestion\\.ingest|lina\\.admin\\.ingest\\.completion"} == 0)
+          for: 5m
+          labels:
+            severity: critical
+            component: rabbitmq
+            queue_type: main
+          annotations:
+            summary: "RabbitMQ main queue is blocked"
+            description: "{{ $labels.queue }} has ready messages but no active consumers."
+
+        - alert: RabbitMQDLQMessagesPresent
+          expr: sum by (queue) (rabbitmq_queue_messages_ready{job="data-stack-rabbitmq",namespace="skala3-finalproj-class2-team7",vhost="/",queue=~"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq"}) > 0
+          for: 5m
+          labels:
+            severity: critical
+            component: rabbitmq
+            queue_type: dlq
+          annotations:
+            summary: "RabbitMQ DLQ has messages"
+            description: "DLQ queue {{ $labels.queue }} has ready messages for 5m."
+
+        - alert: RabbitMQDLQIncreasing
+          expr: sum by (queue) (increase(rabbitmq_queue_messages_ready{job="data-stack-rabbitmq",namespace="skala3-finalproj-class2-team7",vhost="/",queue=~"lina\\.admin\\.ingest\\.dlq|lina\\.admin\\.ingest\\.completion\\.dlq"}[5m])) > 0
+          for: 3m
+          labels:
+            severity: warning
+            component: rabbitmq
+            queue_type: dlq
+          annotations:
+            summary: "RabbitMQ DLQ messages are increasing"
+            description: "DLQ queue {{ $labels.queue }} is increasing in the last 5m."
+
         - alert: MySQLSlowQueriesIncreasing
           expr: rate(mysql_global_status_slow_queries{job="data-stack-mysql-metrics"}[5m]) > 0.05
           for: 10m
