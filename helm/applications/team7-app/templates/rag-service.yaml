@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: rag
+spec:
+  selector:
+    app: rag
+  ports:
+    - name: http
+      port: {{ .Values.services.rag.port }}
+      targetPort: http
+      protocol: TCP

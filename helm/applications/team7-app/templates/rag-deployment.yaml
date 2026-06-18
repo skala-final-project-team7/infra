@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: team7-rag
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: rag
+    app.kubernetes.io/name: rag
+    app.kubernetes.io/instance: team7-rag
+    app.kubernetes.io/component: rag-api
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rag
+  template:
+    metadata:
+      labels:
+        app: rag
+        app.kubernetes.io/name: rag
+        app.kubernetes.io/instance: team7-rag
+        app.kubernetes.io/component: rag-api
+    spec:
+      imagePullSecrets:
+{{- range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+{{- end }}
+      containers:
+        - name: rag
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.images.rag.repository }}:{{ .Values.images.rag.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: rag-config
+            - secretRef:
+                name: {{ .Values.secrets.rag }}
+            - secretRef:
+                name: {{ .Values.secrets.appConnections }}
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi

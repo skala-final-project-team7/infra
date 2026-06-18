@@ -1,0 +1,126 @@
+name: Sync Team7 App image tags from Harbor dispatch
+
+on:
+  repository_dispatch:
+    types: [harbor-image-updated]
+  workflow_dispatch:
+    inputs:
+      component:
+        description: "수동 실행용 컴포넌트 (bffServer | authServer | ingestionApi | ingestionWorker | rag)"
+        required: false
+      tag:
+        description: "수동 실행용 이미지 태그 (예: 2026.06.18.a1b2c3d)"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync-manifest:
+    name: Update team7-app image tags
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          set -euo pipefail
+          curl -fsSL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
+          chmod +x /usr/local/bin/yq
+
+      - name: Parse dispatched images and update values
+        id: update
+        env:
+          IMAGES_JSON: ${{ toJson(github.event.client_payload.images) }}
+          MANUAL_COMPONENT: ${{ github.event.inputs.component }}
+          MANUAL_TAG: ${{ github.event.inputs.tag }}
+          EVENT_NAME: ${{ github.event_name }}
+          SOURCE_REPO: ${{ github.event.client_payload.repository }}
+        run: |
+          set -euo pipefail
+
+          VALUES_FILE="helm/applications/team7-app/values.yaml"
+          UPDATED=0
+          UPDATED_SERVICES=""
+          IMAGES_JSON="$(echo "${IMAGES_JSON}" | tr -d '[:space:]')"
+
+          if [ "${EVENT_NAME}" = "repository_dispatch" ]; then
+            if [ "${IMAGES_JSON}" != "null" ] && [ "${IMAGES_JSON}" != "[]" ] && [ -n "${IMAGES_JSON}" ]; then
+              for IMAGE in $(echo "${IMAGES_JSON}" | jq -r '.[]'); do
+                TAG="${IMAGE##*:}"
+                SERVICE="${IMAGE%:*}"
+                SERVICE="${SERVICE##*/}"
+
+                SERVICE_KEY=""
+                case "${SERVICE}" in
+                  bff-server)        SERVICE_KEY="bffServer" ;;
+                  auth-server)       SERVICE_KEY="authServer" ;;
+                  ingestion-api)     SERVICE_KEY="ingestionApi" ;;
+                  ingestion-worker)  SERVICE_KEY="ingestionWorker" ;;
+                  rag)               SERVICE_KEY="rag" ;;
+                  default)
+                    if echo "${SOURCE_REPO}" | grep -Eq '(^|/)rag-deploy$'; then
+                      SERVICE_KEY="rag"
+                    fi
+                    ;;
+                  *)                 SERVICE_KEY="" ;;
+                esac
+
+                if [ -z "${SERVICE_KEY}" ]; then
+                  echo "SKIP: unknown service name in image=${IMAGE}"
+                  continue
+                fi
+
+                yq -i ".images.${SERVICE_KEY}.tag = \"${TAG}\"" "${VALUES_FILE}"
+                UPDATED=1
+                if [ -z "${UPDATED_SERVICES}" ]; then
+                  UPDATED_SERVICES="${SERVICE}=${TAG}"
+                else
+                  UPDATED_SERVICES="${UPDATED_SERVICES} ${SERVICE}=${TAG}"
+                fi
+              done
+            fi
+          elif [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ -n "${MANUAL_COMPONENT}" ] && [ -n "${MANUAL_TAG}" ]; then
+            SERVICE_KEY=""
+            case "${MANUAL_COMPONENT}" in
+              bffServer|bff-server)          SERVICE_KEY="bffServer" ;;
+              authServer|auth-server)        SERVICE_KEY="authServer" ;;
+              ingestionApi|ingestion-api)    SERVICE_KEY="ingestionApi" ;;
+              ingestionWorker|ingestion-worker) SERVICE_KEY="ingestionWorker" ;;
+              rag)                           SERVICE_KEY="rag" ;;
+              *)                             SERVICE_KEY="" ;;
+            esac
+
+            if [ -z "${SERVICE_KEY}" ]; then
+              echo "Invalid component: ${MANUAL_COMPONENT}"
+              exit 1
+            fi
+
+            yq -i ".images.${SERVICE_KEY}.tag = \"${MANUAL_TAG}\"" "${VALUES_FILE}"
+            UPDATED=1
+            UPDATED_SERVICES="${MANUAL_COMPONENT}=${MANUAL_TAG}"
+          fi
+
+          if [ "${UPDATED}" -ne 1 ]; then
+            echo "No update target found."
+            exit 0
+          fi
+
+          echo "updated=1" >> "${GITHUB_OUTPUT}"
+          echo "updated_services=${UPDATED_SERVICES}" >> "${GITHUB_OUTPUT}"
+
+      - name: Commit and push changes
+        if: steps.update.outputs.updated == '1'
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- helm/applications/team7-app/values.yaml; then
+            echo "No value changes to commit."
+            exit 0
+          fi
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add helm/applications/team7-app/values.yaml
+          git commit -m "chore(team7-app): sync image tags [${{ steps.update.outputs.updated_services }}]"
+          git push

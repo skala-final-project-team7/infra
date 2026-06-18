@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  # Workload should consume:
+  # envFrom:
+  #   - configMapRef: { name: rag-config }
+  #   - secretRef:    { name: rag-secret }
+  #   - secretRef:    { name: app-connections-secret }   # infra-common
+  # Runtime mode. If this is false or omitted, rag boots in PoC mode with fake adapters.
+  RAG_USE_REAL_ADAPTERS: "true"
+
+  # Data source placeholders. Query-only rag uses indexed Qdrant/Mongo data in real mode.
+  RAG_SOURCE_TYPE: "json_fixture"
+  RAG_SAMPLES_DIR: "samples"
+  RAG_ATLASSIAN_API_BASE_URL: "https://api.atlassian.com"
+
+  # MongoDB database name. RAG_MONGO_URI should be supplied from a Secret if it contains credentials.
+  RAG_MONGO_DB: "skala_team7"
+  RAG_QDRANT_TITLE_POOL: "title_pool"
+  RAG_QDRANT_CONTENT_POOL: "content_pool"
+  RAG_QDRANT_LABEL_POOL: "label_pool"
+
+  # OpenAI model selection. RAG_OPENAI_API_KEY must be supplied from a Secret.
+  RAG_LLM_ANSWER_MODEL: "gpt-4o"
+  RAG_LLM_AUX_MODEL: "gpt-4o-mini"
+
+  # Embedding / reranker models.
+  RAG_DENSE_EMBEDDING_MODEL: "intfloat/multilingual-e5-large"
+  RAG_CROSS_ENCODER_MODEL: "cross-encoder/ms-marco-MiniLM-L-12-v2"
+  RAG_CROSS_ENCODER_TEMPERATURE: "4.0"
+  RAG_CROSS_ENCODER_DEVICE: ""
+
+  # Optional quality-control toggles.
+  RAG_GENERATOR_CONSERVATIVE_GUARD: "false"
+  RAG_GENERATOR_FORCE_CITATION_SCHEMA: "false"
+  RAG_VERIFIER_FULL_CONTEXT_GROUNDING: "false"

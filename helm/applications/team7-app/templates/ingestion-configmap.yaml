@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingestion-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  # Workload should consume:
+  # envFrom:
+  #   - configMapRef: { name: ingestion-config }
+  #   - secretRef:    { name: ingestion-secret }
+  #   - secretRef:    { name: app-connections-secret }   # infra-common
+  RAG_SOURCE_TYPE: "atlassian"
+  RAG_SAMPLES_DIR: "samples"
+
+  RAG_ATLASSIAN_API_BASE_URL: "https://api.atlassian.com"
+  RAG_ATLASSIAN_REQUEST_DELAY_SECONDS: "0.3"
+  RAG_ATLASSIAN_MAX_RETRIES: "3"
+  RAG_ATLASSIAN_TIMEOUT_SECONDS: "20"
+  RAG_ATLASSIAN_USE_ADMIN_KEY: "true"
+  RAG_ATLASSIAN_SITE_URL: ""
+  RAG_ATLASSIAN_GROUP_ACL_FIELD_ORDER: "id,groupId,name"
+  RAG_ATLASSIAN_GROUP_ACL_PREFIX: ""
+  RAG_ATLASSIAN_EMPTY_RESTRICTION_POLICY: "mark_missing"
+  RAG_ATLASSIAN_ANCESTOR_RESTRICTION_LOOKUP: "true"
+  RAG_ATLASSIAN_PUBLIC_ACL_GROUP: "*"
+
+  RAG_INTERNAL_AUTH_SERVER_BASE_URL: "http://auth-server:8081"
+
+  RAG_INGEST_COMPLETION_ROUTING_KEY: "lina.admin.ingest.completion"
+  RAG_INGEST_COMPLETION_QUEUE: "lina.admin.ingest.completion"
+  RAG_INGEST_COMPLETION_DLQ: "lina.admin.ingest.completion.dlq"
+  RAG_INGEST_JOB_EXCHANGE: "lina.admin.ingest"
+  RAG_INGEST_JOB_ROUTING_KEY: "admin.ingest.requested"
+  RAG_INGEST_JOB_QUEUE: "lina.data-ingestion.ingest"
+  RAG_INGEST_JOB_DLQ: "lina.data-ingestion.ingest.dlq"
+
+  RAG_DATA_SYNC_PREVIOUS_SNAPSHOT: "data/snapshots/latest_snapshot.json"
+  RAG_DATA_SYNC_DELTA_DELETE_CONFIRM: "false"
+  RAG_ATTACHMENT_DOWNLOAD_DIR: "data/attachments"
+  RAG_MONGO_DB: "skala_team7"
+  RAG_QDRANT_TITLE_POOL: "title_pool"
+  RAG_QDRANT_CONTENT_POOL: "content_pool"
+  RAG_QDRANT_LABEL_POOL: "label_pool"
+  RAG_INTERNAL_AUTH_SERVER_ADMIN_CREDENTIAL_PATH: "/internal/auth/admin-confluence-credential"
+
+  RAG_LLM_ANSWER_MODEL: "gpt-4o"
+  RAG_LLM_AUX_MODEL: "gpt-4o-mini"
+  RAG_DENSE_EMBEDDING_MODEL: "intfloat/multilingual-e5-large"
+  RAG_CROSS_ENCODER_MODEL: "cross-encoder/ms-marco-MiniLM-L-12-v2"
+  RAG_CROSS_ENCODER_TEMPERATURE: "4.0"
+  RAG_CROSS_ENCODER_DEVICE: ""
+  RAG_GENERATOR_CONSERVATIVE_GUARD: "false"
+  RAG_GENERATOR_FORCE_CITATION_SCHEMA: "false"
+  RAG_VERIFIER_FULL_CONTEXT_GROUNDING: "false"
+  RAG_USE_REAL_ADAPTERS: "true"

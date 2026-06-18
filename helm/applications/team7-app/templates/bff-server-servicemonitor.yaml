@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: team7-bff-server
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: bff-server
+    app.kubernetes.io/name: bff-server
+    app.kubernetes.io/instance: team7-bff-server
+spec:
+  selector:
+    matchLabels:
+      app: bff-server
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      scrapeTimeout: 10s

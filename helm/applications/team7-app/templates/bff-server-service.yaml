@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-server
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: bff-server
+spec:
+  selector:
+    app: bff-server
+  ports:
+    - name: http
+      port: {{ .Values.services.bffServer.port }}
+      targetPort: http
+      protocol: TCP

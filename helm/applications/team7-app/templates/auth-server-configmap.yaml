@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-server-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  # Workload should consume:
+  # envFrom:
+  #   - configMapRef: { name: auth-server-config }
+  #   - secretRef:    { name: auth-server-secret }
+  #   - secretRef:    { name: app-connections-secret }   # infra-common
+  FRONTEND_CALLBACK_URL: "https://lina-work-with-ai.vercel.app/auth/callback"
+  CONFLUENCE_REDIRECT_URI: "https://<public-api-domain>/api/auth/callback"
+  CONFLUENCE_API_BASE_URI: "https://api.atlassian.com"
+  CONFLUENCE_AUTHORIZATION_URI: "https://auth.atlassian.com/authorize"
+  CONFLUENCE_TOKEN_URI: "https://auth.atlassian.com/oauth/token"
+  CONFLUENCE_USER_INFO_URI: "https://api.atlassian.com/me"
+  CONFLUENCE_SCOPES: "read:me read:confluence-content.all read:confluence-user read:confluence-groups read:confluence-space.summary offline_access"
+  CONFLUENCE_SITE_URL: ""
+  OAUTH_STATE_TTL_SECONDS: "600"
+  LINA_JWT_ISSUER: "lina-auth-server"
+  LINA_JWT_ACCESS_TTL: "3600"
+  LINA_JWT_REFRESH_TTL: "1209600"
+  ADMIN_KEY_DURATION_MINUTES: "60"

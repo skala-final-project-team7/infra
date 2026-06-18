@@ -1,0 +1,6 @@
+apiVersion: v2
+name: team7-app
+description: Team7 application workloads (backend, ingestion, rag, ingress)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

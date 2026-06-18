@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: team7-ingestion-worker
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: ingestion-worker
+    app.kubernetes.io/name: ingestion-worker
+    app.kubernetes.io/instance: team7-ingestion-worker
+    app.kubernetes.io/component: ingestion-worker
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: ingestion-worker
+  template:
+    metadata:
+      labels:
+        app: ingestion-worker
+        app.kubernetes.io/name: ingestion-worker
+        app.kubernetes.io/instance: team7-ingestion-worker
+        app.kubernetes.io/component: ingestion-worker
+    spec:
+      imagePullSecrets:
+{{- range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+{{- end }}
+      containers:
+        - name: ingestion-worker
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.images.ingestionWorker.repository }}:{{ .Values.images.ingestionWorker.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 8002
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: ingestion-config
+            - secretRef:
+                name: {{ .Values.secrets.ingestion }}
+            - secretRef:
+                name: {{ .Values.secrets.appConnections }}
+          resources:
+            requests:
+              cpu: 200m
+              memory: 1024Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi

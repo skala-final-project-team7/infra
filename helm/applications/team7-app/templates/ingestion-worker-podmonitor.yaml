@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: team7-ingestion-worker
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: ingestion-worker
+    app.kubernetes.io/name: ingestion-worker
+    app.kubernetes.io/instance: team7-ingestion-worker
+spec:
+  selector:
+    matchLabels:
+      app: ingestion-worker
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

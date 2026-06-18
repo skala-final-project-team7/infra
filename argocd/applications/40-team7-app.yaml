@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: team7-app
+  namespace: skala3-finalproj-class2-team7
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/skala-final-project-team7/infra.git
+    targetRevision: main
+    path: helm/applications/team7-app
+    helm:
+      releaseName: team7-app
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: skala3-finalproj-class2-team7
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

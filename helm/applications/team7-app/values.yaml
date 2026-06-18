@@ -1,0 +1,46 @@
+global:
+  namespace: skala3-finalproj-class2-team7
+  imageRegistry: amdp-registry.skala-ai.com/skala26a-ai2
+  imagePullSecrets:
+    - team7-harbor-secret
+
+images:
+  bffServer:
+    repository: bff-server
+    tag: latest
+  authServer:
+    repository: auth-server
+    tag: latest
+  ingestionApi:
+    repository: ingestion-api
+    tag: latest
+  ingestionWorker:
+    repository: ingestion-worker
+    tag: latest
+  rag:
+    repository: rag-deploy
+    tag: latest
+
+ingress:
+  enabled: true
+  className: public-nginx
+  host: team7-lina.skala25a.project.skala-ai.com
+  tlsSecretName: team7-lina-tls
+  frontendExternalName: lina-work-with-ai.vercel.app
+
+services:
+  bffServer:
+    port: 8080
+  authServer:
+    port: 8081
+  ingestionApi:
+    port: 8001
+  rag:
+    port: 8000
+
+secrets:
+  appConnections: app-connections-secret
+  bffServer: bff-server-secret
+  authServer: auth-server-secret
+  ingestion: ingestion-secret
+  rag: rag-secret

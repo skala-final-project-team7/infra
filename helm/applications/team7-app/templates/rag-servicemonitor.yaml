@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: team7-rag
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: rag
+    app.kubernetes.io/name: rag
+    app.kubernetes.io/instance: team7-rag
+spec:
+  selector:
+    matchLabels:
+      app: rag
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
