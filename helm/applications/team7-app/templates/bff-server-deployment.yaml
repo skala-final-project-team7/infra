@@ -20,6 +20,7 @@ spec:
 {{- range .Values.global.imagePullSecrets }}
         - name: {{ . }}
 {{- end }}
+      enableServiceLinks: false
       containers:
         - name: bff-server
           image: "{{ .Values.global.imageRegistry }}/{{ .Values.images.bffServer.repository }}:{{ .Values.images.bffServer.tag }}"
@@ -35,6 +36,12 @@ spec:
                 name: {{ .Values.secrets.bffServer }}
             - secretRef:
                 name: {{ .Values.secrets.appConnections }}
+          env:
+            - name: SPRING_DATA_MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.appConnections }}
+                  key: RAG_MONGO_URI
           readinessProbe:
             tcpSocket:
               port: http
