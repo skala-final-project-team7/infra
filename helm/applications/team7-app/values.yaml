@@ -10,7 +10,7 @@ images:
     tag: ca31217024f1e9334eee79a8dc40ecee1053582a
   authServer:
     repository: auth-server
-    tag: 3f7e0c761193e61a811ef3c221b20120f564938e
+    tag: ca31217024f1e9334eee79a8dc40ecee1053582a
   ingestionApi:
     repository: ingestion-api
     tag: d185c304614719e4612d71527d5edc03728cdbbf
