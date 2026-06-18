@@ -42,7 +42,10 @@ spec:
             - name: MANAGEMENT_SERVER_PORT
               value: "{{ .Values.services.authServer.port }}"
             - name: MYSQL_URL
-              value: "jdbc:mysql://data-stack-mysql:3306/skala_team7?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.appConnections }}
+                  key: MYSQL_URL
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
