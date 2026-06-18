@@ -20,6 +20,7 @@ spec:
 {{- range .Values.global.imagePullSecrets }}
         - name: {{ . }}
 {{- end }}
+      enableServiceLinks: false
       containers:
         - name: auth-server
           image: "{{ .Values.global.imageRegistry }}/{{ .Values.images.authServer.repository }}:{{ .Values.images.authServer.tag }}"
@@ -35,6 +36,11 @@ spec:
                 name: {{ .Values.secrets.authServer }}
             - secretRef:
                 name: {{ .Values.secrets.appConnections }}
+          env:
+            - name: SERVER_PORT
+              value: "{{ .Values.services.authServer.port }}"
+            - name: MANAGEMENT_SERVER_PORT
+              value: "{{ .Values.services.authServer.port }}"
           readinessProbe:
             tcpSocket:
               port: http
