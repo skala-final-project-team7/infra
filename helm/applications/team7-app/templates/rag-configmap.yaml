@@ -9,7 +9,7 @@ data:
   #   - configMapRef: { name: rag-config }
   #   - secretRef:    { name: rag-secret }
   #   - secretRef:    { name: app-connections-secret }   # infra-common
-  # Runtime mode. If this is false or omitted, rag boots in PoC mode with fake adapters.
+  # Runtime mode. false keeps RAG in PoC mode (no external OpenAI/provider dependencies at boot).
   RAG_USE_REAL_ADAPTERS: "true"
 
   # Data source placeholders. Query-only rag uses indexed Qdrant/Mongo data in real mode.
