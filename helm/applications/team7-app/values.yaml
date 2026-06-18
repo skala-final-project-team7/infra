@@ -7,19 +7,19 @@ global:
 images:
   bffServer:
     repository: bff-server
-    tag: latest
+    tag: 9ba92b65056a94ff37df29b246a5974a7fa3d33b
   authServer:
     repository: auth-server
-    tag: latest
+    tag: 3f7e0c761193e61a811ef3c221b20120f564938e
   ingestionApi:
     repository: ingestion-api
-    tag: latest
+    tag: d185c304614719e4612d71527d5edc03728cdbbf
   ingestionWorker:
     repository: ingestion-worker
-    tag: latest
+    tag: d185c304614719e4612d71527d5edc03728cdbbf
   rag:
     repository: rag-deploy
-    tag: latest
+    tag: ed4f82b6f051074031f343e4c2db7feadaaab7be
 
 ingress:
   enabled: true
