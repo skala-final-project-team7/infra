@@ -37,11 +37,20 @@ spec:
             - secretRef:
                 name: {{ .Values.secrets.appConnections }}
           env:
+            - name: SERVER_PORT
+              value: "{{ .Values.services.bffServer.port }}"
+            - name: MANAGEMENT_SERVER_PORT
+              value: "{{ .Values.services.bffServer.port }}"
             - name: SPRING_DATA_MONGODB_URI
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.appConnections }}
                   key: RAG_MONGO_URI
+            - name: SPRING_DATA_MONGODB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.appConnections }}
+                  key: RAG_MONGO_DB
           readinessProbe:
             tcpSocket:
               port: http
