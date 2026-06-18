@@ -10,7 +10,7 @@ data:
   #   - secretRef:    { name: auth-server-secret }
   #   - secretRef:    { name: app-connections-secret }   # infra-common
   FRONTEND_CALLBACK_URL: "https://lina-work-with-ai.vercel.app/auth/callback"
-  CONFLUENCE_REDIRECT_URI: "https://<public-api-domain>/api/auth/callback"
+  CONFLUENCE_REDIRECT_URI: "https://team7-lina.skala25a.project.skala-ai.com/api/auth/callback"
   CONFLUENCE_API_BASE_URI: "https://api.atlassian.com"
   CONFLUENCE_AUTHORIZATION_URI: "https://auth.atlassian.com/authorize"
   CONFLUENCE_TOKEN_URI: "https://auth.atlassian.com/oauth/token"

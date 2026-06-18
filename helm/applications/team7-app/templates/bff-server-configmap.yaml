@@ -9,13 +9,13 @@ data:
   #   - configMapRef: { name: bff-server-config }
   #   - secretRef:    { name: bff-server-secret }
   #   - secretRef:    { name: app-connections-secret }   # infra-common
-  ML_PIPELINE_BASE_URL: "http://<ml-pipeline-service>"
+  ML_PIPELINE_BASE_URL: "http://ingestion-api:8001"
   ML_PIPELINE_TIMEOUT_MS: "30000"
   ML_PIPELINE_SSE_TIMEOUT_MS: "60000"
   ML_PIPELINE_HISTORY_TURNS: "10"
   DATA_INGESTION_BASE_URL: ""
   DATA_INGESTION_TIMEOUT_MS: "30000"
-  AUTH_SERVER_BASE_URL: "https://<public-api-domain>"
+  AUTH_SERVER_BASE_URL: "https://auth-server:8081"
   AUTH_SERVER_TIMEOUT_MS: "30000"
   LINA_JWT_ISSUER: "lina-auth-server"
   # 민감값은 bff-server-secret에서 관리.
