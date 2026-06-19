@@ -16,7 +16,7 @@ images:
     tag: 75933b0ce4ef11219310dd6eebe71e84f96e159d
   ingestionWorker:
     repository: ingestion-worker
-    tag: d185c304614719e4612d71527d5edc03728cdbbf
+    tag: 75933b0ce4ef11219310dd6eebe71e84f96e159d
   rag:
     repository: rag-deploy
     tag: c6576edc987966bd8b691b47425cf9ccaa934fb7
