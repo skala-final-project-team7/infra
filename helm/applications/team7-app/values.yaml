@@ -7,7 +7,7 @@ global:
 images:
   bffServer:
     repository: bff-server
-    tag: ca31217024f1e9334eee79a8dc40ecee1053582a
+    tag: cacf2d9354699799a08f56677bda73adf263d0bc
   authServer:
     repository: auth-server
     tag: cacf2d9354699799a08f56677bda73adf263d0bc
