@@ -19,7 +19,7 @@ images:
     tag: d185c304614719e4612d71527d5edc03728cdbbf
   rag:
     repository: rag-deploy
-    tag: ed4f82b6f051074031f343e4c2db7feadaaab7be
+    tag: 1869c1370ab0099b1e3918de03710be7e43fe9ba
 
 ingress:
   enabled: true
