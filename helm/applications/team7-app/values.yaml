@@ -13,7 +13,7 @@ images:
     tag: cacf2d9354699799a08f56677bda73adf263d0bc
   ingestionApi:
     repository: ingestion-api
-    tag: e9ca236ea451d1bcf991be0092e4d877402d55b1
+    tag: 75933b0ce4ef11219310dd6eebe71e84f96e159d
   ingestionWorker:
     repository: ingestion-worker
     tag: d185c304614719e4612d71527d5edc03728cdbbf
