@@ -37,3 +37,15 @@ data:
   RAG_GENERATOR_CONSERVATIVE_GUARD: "false"
   RAG_GENERATOR_FORCE_CITATION_SCHEMA: "false"
   RAG_VERIFIER_FULL_CONTEXT_GROUNDING: "false"
+
+  # OpenTelemetry tracing. Apps send spans to the namespace-local Collector, which forwards to Tempo.
+  RAG_OTEL_ENABLED: "true"
+  RAG_OTEL_SERVICE_NAME: "rag-deploy"
+  RAG_OTEL_ENVIRONMENT: "dev"
+  RAG_OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.skala3-finalproj-class2-team7.svc.cluster.local:4317"
+  OTEL_SERVICE_NAME: "rag-deploy"
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=dev"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.skala3-finalproj-class2-team7.svc.cluster.local:4317"
+  OTEL_TRACES_EXPORTER: "otlp"
+  OTEL_METRICS_EXPORTER: "none"
+  OTEL_LOGS_EXPORTER: "none"

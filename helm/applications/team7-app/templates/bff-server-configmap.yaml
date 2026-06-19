@@ -32,3 +32,14 @@ data:
   ADMIN_INGEST_COMPLETION_RETRY_INITIAL_INTERVAL_MS: "1000"
   ADMIN_INGEST_COMPLETION_RETRY_MULTIPLIER: "2.0"
   ADMIN_INGEST_COMPLETION_RETRY_MAX_INTERVAL_MS: "10000"
+
+  # OpenTelemetry Java agent. The image includes /otel/opentelemetry-javaagent.jar.
+  JAVA_TOOL_OPTIONS: "-javaagent:/otel/opentelemetry-javaagent.jar"
+  OTEL_SERVICE_NAME: "bff-server"
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=dev"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.skala3-finalproj-class2-team7.svc.cluster.local:4317"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+  OTEL_TRACES_EXPORTER: "otlp"
+  OTEL_METRICS_EXPORTER: "none"
+  OTEL_LOGS_EXPORTER: "none"
+  OTEL_INSTRUMENTATION_LOGBACK_MDC_ENABLED: "true"

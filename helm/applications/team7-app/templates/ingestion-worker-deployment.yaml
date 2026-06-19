@@ -41,6 +41,11 @@ spec:
                 name: {{ .Values.secrets.ingestion }}
             - secretRef:
                 name: {{ .Values.secrets.appConnections }}
+          env:
+            - name: RAG_OTEL_SERVICE_NAME
+              value: "ingestion-worker"
+            - name: OTEL_SERVICE_NAME
+              value: "ingestion-worker"
           resources:
             requests:
               cpu: 200m

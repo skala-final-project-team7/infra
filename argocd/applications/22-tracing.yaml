@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tracing
+  namespace: skala3-finalproj-class2-team7
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/skala-final-project-team7/infra.git
+    targetRevision: main
+    path: observability/tracing
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: skala3-finalproj-class2-team7
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true

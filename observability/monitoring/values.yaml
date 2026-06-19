@@ -114,6 +114,21 @@ grafana:
       access: proxy
       url: http://loki-gateway.skala3-finalproj-class2-team7.svc.cluster.local
       isDefault: false
+    - name: Tempo
+      uid: tempo
+      type: tempo
+      access: proxy
+      url: http://tempo.skala3-finalproj-class2-team7.svc.cluster.local:3100
+      isDefault: false
+      jsonData:
+        tracesToLogsV2:
+          datasourceUid: loki
+          spanStartTimeShift: "-5m"
+          spanEndTimeShift: "5m"
+          filterByTraceID: true
+          filterBySpanID: false
+        serviceMap:
+          datasourceUid: prometheus
 
 # Prometheus 설정
 prometheus:
