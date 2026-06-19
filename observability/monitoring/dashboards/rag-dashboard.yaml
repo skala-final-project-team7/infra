@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-rag
+  namespace: skala3-finalproj-class2-team7
+  labels:
+    grafana_dashboard: "1"
+data:
+  rag-dashboard.json: |-
+    {
+      "annotations": {"list": [{"builtIn": 1, "datasource": {"type": "grafana", "uid": "-- Grafana --"}, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard"}]},
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}, "id": 1, "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "max(up{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"})", "legendFormat": "rag", "refId": "A"}], "title": "Status", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}, "id": 2, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "sum(rate(http_request_duration_highr_seconds_count{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m]))", "legendFormat": "rps", "refId": "A"}], "title": "Request Rate", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}, "id": 3, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_highr_seconds_bucket{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m])))", "legendFormat": "p95", "refId": "A"}], "title": "HTTP p95 Latency", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}, "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}, "id": 4, "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"}, "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(answer_generation_latency_seconds_bucket{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m])))", "legendFormat": "p95", "refId": "A"}], "title": "Answer p95 Latency", "type": "stat"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}, "id": 5, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_highr_seconds_bucket{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m])))", "legendFormat": "http p95", "refId": "A"}, {"expr": "histogram_quantile(0.95, sum by (le) (rate(answer_generation_latency_seconds_bucket{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m])))", "legendFormat": "answer p95", "refId": "B"}], "title": "Latency", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}, "id": 6, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "process_resident_memory_bytes{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}", "legendFormat": "rss {{pod}}", "refId": "A"}, {"expr": "process_virtual_memory_bytes{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}", "legendFormat": "virtual {{pod}}", "refId": "B"}], "title": "Process Memory", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "cores"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}, "id": 7, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "rate(process_cpu_seconds_total{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m])", "legendFormat": "{{pod}}", "refId": "A"}], "title": "Process CPU", "type": "timeseries"},
+        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}, "id": 8, "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}}, "targets": [{"expr": "rate(verifier_provider_failure_total{job=\"rag\", namespace=\"skala3-finalproj-class2-team7\"}[5m])", "legendFormat": "verifier failure {{pod}}", "refId": "A"}], "title": "Verifier Provider Failures", "type": "timeseries"}
+      ],
+      "refresh": "30s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["team7", "application", "rag"],
+      "templating": {"list": []},
+      "time": {"from": "now-6h", "to": "now"},
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "Team7 RAG",
+      "uid": "team7-rag",
+      "version": 1,
+      "weekStart": ""
+    }
